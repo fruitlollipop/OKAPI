@@ -74,26 +74,29 @@ class HttpsRequest(object):
         :return: True: value is valid, False: value is invalid
         """
         validation = False
-        if choices == ():
-            validation = True
-        else:
-            if value in choices:
+        if value:
+            if choices == ():
                 validation = True
             else:
-                debug_logger.debug('{0} should be in {1}'.format(value, choices))
+                if value in choices:
+                    validation = True
+                else:
+                    debug_logger.debug('{0} should be in {1}'.format(value, choices))
         return validation
 
-    def build_sign(self, secret_key):
+    def build_sign(self, api_key, secret_key):
         """
         To build MD5 sign for user's parameters.
+        :param api_key: String of API KEY
         :param secret_key: String of SECRET KEY
         :return: Signed string encrypted by MD5
         """
         sign = ''
+        self.add_param_to_body('api_key', api_key)
         for key in sorted(self.__body_params.keys()):
             sign += key + '=' + str(self.__body_params[key]) + '&'
         data = sign + 'secret_key=' + secret_key
-        self.__body_params['sign'] = hashlib.md5(data.encode('utf8')).hexdigest().upper()
+        self.add_param_to_body('sign', hashlib.md5(data.encode('utf8')).hexdigest().upper())
 
     def get(self, resource):
         """
@@ -111,15 +114,16 @@ class HttpsRequest(object):
         self.clear_query_string()
         return json.loads(data)
 
-    def post(self, resource, secret_key):
+    def post(self, resource, api_key, secret_key):
         """
         POST method to request resources.
         :param resource: String of URL for resources
+        :param api_key: String of API KEY
         :param secret_key: String of SECRET KEY
         :return: Response of the GET request
         """
         conn = http.client.HTTPSConnection(self.__url, timeout=10)
-        self.build_sign(secret_key)
+        self.build_sign(api_key, secret_key)
         self.__body = urllib.parse.urlencode(self.__body_params)
         debug_logger.debug('Start to POST resource from: {}'.format(self.__url + resource))
         conn.request('POST', resource, self.__body, self.__headers)
