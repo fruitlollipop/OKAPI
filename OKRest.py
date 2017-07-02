@@ -4,7 +4,7 @@
 # To access the REST API of OK sites
 
 from HttpsUtil import HttpsRequest
-from Interface import HTTPS_REQUEST_HEADERS, OKEX_RESOURCE_TEMPLATE, OKCOIN_RESOURCE_TEMPLATE
+from cfg import HTTPS_REQUEST_HEADERS, OKEX_RESOURCE_TEMPLATE, OKCOIN_RESOURCE_TEMPLATE
 import sys
 import time
 

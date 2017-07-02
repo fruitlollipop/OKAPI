@@ -1,13 +1,24 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# 用于进行https请求，以及MD5加密，生成签名的工具类
+# Raise request of https, MD5 encryption, tools of generating signs
 
 import http.client
 import urllib.parse
 import json
 import hashlib
-from Interface import debug_logger
+import logging
+import logging.config
+
+# Loggers for collecting logs
+LOG_FILE = 'log.cfg'
+with open(LOG_FILE, encoding='utf-8') as fp:
+    logging.config.fileConfig(fp)
+debug_logger = logging.getLogger('debug')
+info_logger = logging.getLogger('info')
+warn_logger = logging.getLogger('warn')
+error_logger = logging.getLogger('error')
+critical_logger = logging.getLogger('critical')
 
 
 class HttpsRequest(object):
